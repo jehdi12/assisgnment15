@@ -1,0 +1,137 @@
+import java.util.*;
+
+class Node {
+    int key;
+    Node left, right;
+
+    public Node(int item) {
+        key = item;
+        left = right = null;
+    }
+}
+
+public class BinarySearchTree {
+    Node root;
+
+    BinarySearchTree() {
+        root = null;
+    }
+
+    void insert(int key) {
+        root = insertRec(root, key);
+    }
+
+    Node insertRec(Node root, int key) {
+        if (root == null) {
+            root = new Node(key);
+            return root;
+        }
+
+        if (key < root.key)
+            root.left = insertRec(root.left, key);
+        else if (key > root.key)
+            root.right = insertRec(root.right, key);
+
+        return root;
+    }
+
+    void deleteKey(int key) {
+        root = deleteRec(root, key);
+    }
+
+    Node deleteRec(Node root, int key) {
+        if (root == null) return root;
+
+        if (key < root.key)
+            root.left = deleteRec(root.left, key);
+        else if (key > root.key)
+            root.right = deleteRec(root.right, key);
+        else {
+            if (root.left == null)
+                return root.right;
+            else if (root.right == null)
+                return root.left;
+
+            root.key = minValue(root.right);
+
+            root.right = deleteRec(root.right, root.key);
+        }
+
+        return root;
+    }
+
+    int minValue(Node root) {
+        int minv = root.key;
+        while (root.left != null) {
+            minv = root.left.key;
+            root = root.left;
+        }
+        return minv;
+    }
+
+    boolean search(int key) {
+        return searchRec(root, key);
+    }
+
+    boolean searchRec(Node root, int key) {
+        if (root == null || root.key == key)
+            return root != null;
+
+        if (root.key > key)
+            return searchRec(root.left, key);
+
+        return searchRec(root.right, key);
+    }
+
+    void inorder() {
+        inorderRec(root);
+    }
+
+    void inorderRec(Node root) {
+        if (root != null) {
+            inorderRec(root.left);
+            System.out.print(root.key + " ");
+            inorderRec(root.right);
+        }
+    }
+
+    public static void main(String[] args) {
+        BinarySearchTree bst = new BinarySearchTree();
+
+        
+        List<Integer> numbers = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            numbers.add(i);
+        }
+        Collections.shuffle(numbers);
+        for (int i = 0; i < 10; i++) {
+            bst.insert(numbers.get(i));
+        }
+
+        System.out.println("BST after inserting 10 numbers:");
+        bst.inorder();
+        System.out.println();
+
+      
+        Collections.shuffle(numbers);
+        for (int i = 0; i < 3; i++) {
+            bst.deleteKey(numbers.get(i));
+        }
+
+        System.out.println("BST after deleting 3 numbers:");
+        bst.inorder();
+        System.out.println();
+
+        // Task 3: Search 3 numbers from 0 to 9 randomly
+        Collections.shuffle(numbers);
+        for (int i = 0; i < 3; i++) {
+            int numToSearch = numbers.get(i);
+            boolean found = bst.search(numToSearch);
+            if (found) {
+                System.out.println("Number " + numToSearch + " found in BST");
+            } else {
+                System.out.println("Number " + numToSearch + " not found in BST");
+            }
+        }
+    }
+}
